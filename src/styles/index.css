@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #111;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.poster-editable:hover {
+  outline: 1px dashed rgba(255, 255, 255, 0.18);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.poster-editable:focus {
+  outline: 1px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
