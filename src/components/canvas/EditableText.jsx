@@ -1,20 +1,16 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useId } from 'react'
+import { selection } from '../../lib/selection'
 
-/**
- * Inline-editable text for the poster canvas.
- * - When not editing: renders `displayContent` (JSX) if provided, else plain `value`
- * - When editing: shows a transparent contenteditable with the plain `value`
- * Both modes use the same `style` so layout never shifts.
- */
-export default function EditableText({ value, onChange, style, multiline, displayContent }) {
+export default function EditableText({ value, onChange, style, multiline, displayContent, onHide }) {
+  const id = useId()
+  const [isSelected, setIsSelected] = useState(false)
   const [editing, setEditing] = useState(false)
   const editRef = useRef(null)
 
-  const startEdit = () => {
-    setEditing(true)
-  }
+  // Stay in sync with global selection
+  useEffect(() => selection.subscribe((sid) => setIsSelected(sid === id)), [id])
 
-  // Focus + move cursor to end once the editable div mounts
+  // Focus + cursor-to-end when entering edit mode
   useEffect(() => {
     if (editing && editRef.current) {
       editRef.current.focus()
@@ -28,6 +24,11 @@ export default function EditableText({ value, onChange, style, multiline, displa
     }
   }, [editing]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const startEdit = () => {
+    selection.clear()
+    setEditing(true)
+  }
+
   const handleBlur = () => {
     const text = editRef.current?.innerText?.replace(/\n$/, '') || ''
     if (text !== value) onChange(text)
@@ -39,7 +40,22 @@ export default function EditableText({ value, onChange, style, multiline, displa
     if (e.key === 'Escape') editRef.current?.blur()
   }
 
-  const baseStyle = { outline: 'none', cursor: 'text', ...style }
+  const handleClick = (e) => {
+    e.stopPropagation()
+    if (isSelected) {
+      startEdit()
+    } else {
+      selection.set(id)
+    }
+  }
+
+  const handleHide = (e) => {
+    e.stopPropagation()
+    selection.clear()
+    onHide()
+  }
+
+  const baseStyle = { outline: 'none', ...style }
 
   if (editing) {
     return (
@@ -49,19 +65,44 @@ export default function EditableText({ value, onChange, style, multiline, displa
         suppressContentEditableWarning
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        style={{ ...baseStyle, whiteSpace: multiline ? 'pre-wrap' : 'nowrap' }}
-        className="poster-editable"
+        style={{ ...baseStyle, cursor: 'text', whiteSpace: multiline ? 'pre-wrap' : 'nowrap' }}
+        className="poster-editable poster-editing"
       />
     )
   }
 
   return (
     <div
-      onClick={startEdit}
-      style={baseStyle}
+      onClick={handleClick}
+      onDoubleClick={(e) => { e.stopPropagation(); startEdit() }}
+      style={{
+        ...baseStyle,
+        position: 'relative',
+        cursor: 'crosshair',
+        ...(isSelected && {
+          outline: '1px solid rgba(255,255,255,0.75)',
+          outlineOffset: '3px',
+          borderRadius: '2px',
+          backgroundColor: 'rgba(255,255,255,0.06)',
+        }),
+      }}
       className="poster-editable"
     >
       {displayContent ?? value}
+
+      {/* Action bar — only when selected */}
+      {isSelected && (
+        <div className="poster-action-bar">
+          <button className="poster-action-btn" onClick={(e) => { e.stopPropagation(); startEdit() }} title="Edit">
+            ✎
+          </button>
+          {onHide && (
+            <button className="poster-action-btn poster-action-remove" onClick={handleHide} title="Remove">
+              ✕
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -109,7 +109,7 @@ export default function TemplatesTab() {
       </div>
 
       <p className="text-xs text-neutral-600 leading-relaxed">
-        Templates set colors, fonts, and overlays. Your text and photo are preserved.
+        Templates set colors, fonts, and overlays. Your text, photo, and layout style (standard / transparent / compact) are all preserved.
       </p>
     </div>
   )

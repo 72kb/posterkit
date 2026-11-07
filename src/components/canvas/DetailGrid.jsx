@@ -1,19 +1,20 @@
 import usePosterStore from '../../store/posterStore'
 import EditableText from './EditableText'
+import HideableDivider from './HideableDivider'
+import { hexToRgba } from '../../lib/colorUtils'
 
 export default function DetailGrid() {
-  const { detailRows, showDetailGrid, showDivider, dividerOpacity, accentColor, bodyFont, updateDetailRow } = usePosterStore()
+  const { detailRows, showDetailGrid, showDivider, dividerOpacity, accentColor, textColor, bodyFont, updateDetailRow, removeDetailRow, set } = usePosterStore()
 
   if (!showDetailGrid) return null
 
   return (
     <div style={{ padding: '6px 20px 8px', flexShrink: 0 }}>
       {showDivider && (
-        <div style={{
-          height: '0.5px',
-          backgroundColor: `rgba(255,255,255,${dividerOpacity})`,
-          marginBottom: 8,
-        }} />
+        <HideableDivider
+          style={{ backgroundColor: hexToRgba(textColor, dividerOpacity), marginBottom: 8 }}
+          onHide={() => set({ showDivider: false })}
+        />
       )}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 20px' }}>
         {detailRows.map((row) => (
@@ -21,6 +22,7 @@ export default function DetailGrid() {
             <EditableText
               value={row.label}
               onChange={(v) => updateDetailRow(row.id, 'label', v)}
+              onHide={() => removeDetailRow(row.id)}
               style={{
                 fontFamily: `'${bodyFont}', sans-serif`,
                 fontSize: 7.5,
@@ -35,10 +37,11 @@ export default function DetailGrid() {
             <EditableText
               value={row.value}
               onChange={(v) => updateDetailRow(row.id, 'value', v)}
+              onHide={() => removeDetailRow(row.id)}
               style={{
                 fontFamily: `'${bodyFont}', sans-serif`,
                 fontSize: 7.5,
-                color: 'rgba(255,255,255,0.7)',
+                color: hexToRgba(textColor, 0.7),
                 lineHeight: 1.4,
               }}
             />

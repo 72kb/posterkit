@@ -29,16 +29,19 @@ const defaultState = {
   displayFont: 'Bebas Neue',
   bodyFont: 'DM Sans',
   accentColor: '#FFFFFF',
+  textColor: '#ffffff',
 
   // Top bar
   eventLabel: 'Your Event · Location',
   aliasPill: '',
   showAliasPill: false,
+  showEventLabel: true,
 
   // Mid caption (portrait)
   subjectTitle: 'Your Title Here',
   subjectTitleAccentWord: '',
   captionText: 'Add a caption to describe this moment.',
+  showCaption: true,
 
   // Detail grid
   showDetailGrid: true,
@@ -48,16 +51,27 @@ const defaultState = {
   ],
 
   // Bottom
+  showNameStamp: true,
   nameStamp: 'NAME',
   tagline: 'your tagline goes here',
+  showTagline: true,
   tracklist: '',
+  showTracklist: true,
   photoCredit: 'Photograph by',
   photoLocation: '',
   showPhotoCredit: true,
+  showPhotoLocation: true,
+
+  // Subject
+  showSubjectTitle: true,
 
   // Divider
   showDivider: true,
   dividerOpacity: 0.25,
+
+  // Portrait style
+  portraitStyle: 'standard', // 'standard' | 'transparent' | 'compact'
+  compactPosition: 'bottom-left', // 'top-left' | 'top-center' | 'top-right' | 'mid-left' | 'center' | 'mid-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'
 
   // Annotated format
   annotationFont: 'Caveat',

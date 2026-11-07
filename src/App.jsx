@@ -3,6 +3,7 @@ import PosterCanvas from './components/canvas/PosterCanvas'
 import EditorPanel from './components/editor/EditorPanel'
 import { useExport } from './hooks/useExport'
 import usePosterStore from './store/posterStore'
+import { selection } from './lib/selection'
 
 const PORTRAIT_W = 700
 const PORTRAIT_H = 980
@@ -57,6 +58,7 @@ export default function App() {
         <div
           ref={containerRef}
           className="flex-1 flex items-center justify-center overflow-hidden bg-neutral-950 min-w-0"
+          onClick={() => selection.clear()}
         >
           <div
             style={{

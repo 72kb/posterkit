@@ -21,6 +21,14 @@ const ACCENT_SWATCHES = [
   { name: 'Black', color: '#111111' },
 ]
 
+const TEXT_SWATCHES = [
+  { name: 'White',      color: '#ffffff' },
+  { name: 'Warm Cream', color: '#F5ECD7' },
+  { name: 'Cool Gray',  color: '#C8D0D8' },
+  { name: 'Soft Gold',  color: '#E8D5A3' },
+  { name: 'Black',      color: '#111111' },
+]
+
 export default function DesignTab() {
   const s = usePosterStore()
 
@@ -28,6 +36,22 @@ export default function DesignTab() {
     <div className="flex flex-col gap-4">
       <Section title="Background">
         <ColorPicker label="Background Color" value={s.bgColor || '#0d0d0d'} onChange={(v) => s.set({ bgColor: v })} />
+      </Section>
+
+      <Section title="Text Color">
+        <ColorPicker label="Color" value={s.textColor || '#ffffff'} onChange={(v) => s.set({ textColor: v })} />
+        <div className="flex gap-2 flex-wrap mt-1">
+          {TEXT_SWATCHES.map((sw) => (
+            <button
+              key={sw.name}
+              onClick={() => s.set({ textColor: sw.color })}
+              title={sw.name}
+              style={{ backgroundColor: sw.color }}
+              className="w-6 h-6 rounded border border-neutral-600 hover:scale-110 transition-transform"
+            />
+          ))}
+        </div>
+        <p className="text-xs text-neutral-600 leading-relaxed">Applies to titles, captions, credits, and dividers. Accent color controls labels and name stamp.</p>
       </Section>
 
       <Section title="Accent Color">

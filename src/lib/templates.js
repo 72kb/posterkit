@@ -5,8 +5,14 @@ const base = {
   photoHeightPercent: 72,
   showAliasPill: false,
   aliasPill: '',
+  showSubjectTitle: true,
+  showCaption: true,
   showDetailGrid: true,
+  showNameStamp: true,
+  showTagline: true,
+  showTracklist: true,
   showPhotoCredit: true,
+  showPhotoLocation: true,
   showDivider: true,
   dividerOpacity: 0.25,
   subjectTitle: 'Your Title Here',
@@ -22,6 +28,7 @@ const base = {
     { id: '1', label: 'Label', value: 'Value' },
     { id: '2', label: 'Label', value: 'Value' },
   ],
+  textColor: '#ffffff',
 }
 
 export const TEMPLATES = [
@@ -53,6 +60,7 @@ export const TEMPLATES = [
       ...base,
       bgColor: '#f5f5f0',
       accentColor: '#111111',
+      textColor: '#111111',
       paletteDots: ['#111111', '#333333', '#666666', '#999999', '#f5f5f0'],
       displayFont: 'Anton',
       bodyFont: 'Inter',
