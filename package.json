@@ -1,37 +1,62 @@
 {
-  "name": "posterkit",
+  "name": "postakit",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A free, open-source editorial poster studio that runs entirely in your browser.",
+  "license": "MIT",
+  "keywords": [
+    "poster",
+    "editor",
+    "design",
+    "magazine-cover",
+    "react",
+    "vite",
+    "open-source"
+  ],
+  "homepage": "https://72kb.github.io/postakit/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/72kb/postakit.git"
+  },
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "preview": "vite preview",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "check": "npm run lint && npm run build && npm test"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "autoprefixer": "^10.5.0",
     "html-to-image": "^1.11.13",
     "jspdf": "^4.2.1",
-    "postcss": "^8.5.10",
+    "lucide-react": "^0.460.0",
+    "motion": "^12.43.0",
     "react": "^19.2.4",
     "react-colorful": "^5.6.1",
     "react-dom": "^19.2.4",
-    "tailwindcss": "^3.4.19",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.49.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^3.4.19",
     "vite": "^8.0.4"
   }
 }

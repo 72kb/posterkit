@@ -1,16 +1,25 @@
-// Module-level selection manager — only one element selected at a time across the whole canvas
+// Module-level selection manager — only one canvas element selected at a time.
+// Each selection can register actions so keyboard shortcuts (Enter / Delete)
+// can act on whatever is selected.
 let currentId = null
+let currentActions = {}
 const listeners = new Set()
+
+const emit = () => listeners.forEach((fn) => fn(currentId))
 
 export const selection = {
   get: () => currentId,
-  set(id) {
+  actions: () => currentActions,
+  set(id, actions = {}) {
     currentId = id
-    listeners.forEach(fn => fn(id))
+    currentActions = actions
+    emit()
   },
   clear() {
+    if (currentId === null) return
     currentId = null
-    listeners.forEach(fn => fn(null))
+    currentActions = {}
+    emit()
   },
   subscribe(fn) {
     listeners.add(fn)

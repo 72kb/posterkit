@@ -1,9 +1,9 @@
-import usePosterStore from '../../store/posterStore'
+import { usePoster } from '../../store/usePoster'
 import EditableText from './EditableText'
 import { hexToRgba } from '../../lib/colorUtils'
 
 export default function MidCaption() {
-  const { subjectTitle, subjectTitleAccentWord, showSubjectTitle, captionText, showCaption, displayFont, bodyFont, accentColor, textColor, set } = usePosterStore()
+  const { subjectTitle, subjectTitleAccentWord, showSubjectTitle, captionText, showCaption, displayFont, bodyFont, accentColor, textColor, set } = usePoster()
 
   const titleStyle = {
     fontFamily: `'${displayFont}', Impact, sans-serif`,

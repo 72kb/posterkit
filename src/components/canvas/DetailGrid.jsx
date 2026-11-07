@@ -1,10 +1,10 @@
-import usePosterStore from '../../store/posterStore'
+import { usePoster } from '../../store/usePoster'
 import EditableText from './EditableText'
 import HideableDivider from './HideableDivider'
 import { hexToRgba } from '../../lib/colorUtils'
 
 export default function DetailGrid() {
-  const { detailRows, showDetailGrid, showDivider, dividerOpacity, accentColor, textColor, bodyFont, updateDetailRow, removeDetailRow, set } = usePosterStore()
+  const { detailRows, showDetailGrid, showDivider, dividerOpacity, accentColor, textColor, bodyFont, updateDetailRow, removeDetailRow, set } = usePoster()
 
   if (!showDetailGrid) return null
 
@@ -12,7 +12,7 @@ export default function DetailGrid() {
     <div style={{ padding: '6px 20px 8px', flexShrink: 0 }}>
       {showDivider && (
         <HideableDivider
-          style={{ backgroundColor: hexToRgba(textColor, dividerOpacity), marginBottom: 8 }}
+          color={hexToRgba(textColor, dividerOpacity)}
           onHide={() => set({ showDivider: false })}
         />
       )}

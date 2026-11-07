@@ -1,4 +1,4 @@
-import usePosterStore from '../../store/posterStore'
+import { usePoster } from '../../store/usePoster'
 import EditableText from './EditableText'
 import HideableDivider from './HideableDivider'
 import { hexToRgba } from '../../lib/colorUtils'
@@ -9,13 +9,13 @@ export default function BottomFooter() {
     photoCredit, photoLocation, showPhotoCredit, showPhotoLocation,
     displayFont, bodyFont, accentColor, textColor,
     showDivider, dividerOpacity, set,
-  } = usePosterStore()
+  } = usePoster()
 
   return (
     <div style={{ padding: '6px 20px 14px', flexShrink: 0, marginTop: 'auto' }}>
       {showDivider && (
         <HideableDivider
-          style={{ backgroundColor: hexToRgba(textColor, dividerOpacity), marginBottom: 8 }}
+          color={hexToRgba(textColor, dividerOpacity)}
           onHide={() => set({ showDivider: false })}
         />
       )}

@@ -1,0 +1,57 @@
+{
+  "layout": {
+    "orientation": "portrait"
+  },
+  "photo": {
+    "photoPosition": "center 25%",
+    "photoScale": 105,
+    "photoHeightPercent": 74
+  },
+  "palette": {
+    "paletteDots": ["#C8B89A", "#7A6654", "#E8112D", "#FFC906", "#F0EBE1"],
+    "accentColor": "#E8112D",
+    "bgColor": "#0d0d0d"
+  },
+  "typography": {
+    "displayFont": "Bebas Neue",
+    "bodyFont": "DM Sans"
+  },
+  "topBar": {
+    "eventLabel": "Car Park Drift · Lagos",
+    "aliasPill": "72kb",
+    "showAliasPill": true
+  },
+  "subject": {
+    "subjectTitle": "BMW E30 316i",
+    "subjectTitleAccentWord": "316i",
+    "captionText": "G.Power — 99% street, 1% circuit.\nRiding into the golden hour after burning TBS to the ground."
+  },
+  "details": {
+    "showDetailGrid": true,
+    "detailRows": [
+      { "id": "1", "label": "Vehicle",   "value": "BMW E30 316i · Est. 1982–1994" },
+      { "id": "2", "label": "Event",     "value": "Car Park Drift" },
+      { "id": "3", "label": "Location",  "value": "Tafawa Balewa Square, Lagos" },
+      { "id": "4", "label": "Date",      "value": "18 April 2026 · Golden Hour" }
+    ]
+  },
+  "footer": {
+    "nameStamp": "72KB",
+    "tagline": "when the tyres let go · so does everything else",
+    "tracklist": "Tyre smoke · Concrete · Sunset · Lagos energy\nStadium brutalism · Red wheels on white",
+    "photoCredit": "Photograph by 72kb",
+    "photoLocation": "Lagos, Nigeria (2026)",
+    "showPhotoCredit": true
+  },
+  "overlays": {
+    "vignetteIntensity": 0.85,
+    "vignetteDirection": "bottom",
+    "grainOpacity": 0.06,
+    "tintColor": "#B46414",
+    "tintOpacity": 0.12
+  },
+  "divider": {
+    "showDivider": true,
+    "dividerOpacity": 0.25
+  }
+}

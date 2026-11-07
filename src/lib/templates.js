@@ -111,8 +111,8 @@ export const TEMPLATES = [
     },
   },
   {
-    id: 'kodak-film',
-    name: 'Kodak Film',
+    id: 'film-stock',
+    name: 'Film Stock',
     category: 'Warm',
     palette: ['#1a0e00', '#E8A020', '#C87030', '#F5D080', '#3A2000'],
     template: {

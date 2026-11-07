@@ -1,13 +1,13 @@
-import usePosterStore from '../../store/posterStore'
+import { usePoster } from '../../store/usePoster'
 import MagStandardLayout from './MagStandardLayout'
-import MagForbesLayout from './MagForbesLayout'
-import MagVogueLayout from './MagVogueLayout'
-import MagWiredLayout from './MagWiredLayout'
+import MagCapitalLayout from './MagCapitalLayout'
+import MagCoutureLayout from './MagCoutureLayout'
+import MagCircuitLayout from './MagCircuitLayout'
 
 export default function MagazineCanvas() {
-  const { magLayout } = usePosterStore()
-  if (magLayout === 'forbes') return <MagForbesLayout />
-  if (magLayout === 'vogue')  return <MagVogueLayout />
-  if (magLayout === 'wired')  return <MagWiredLayout />
+  const magLayout = usePoster((s) => s.magLayout)
+  if (magLayout === 'capital') return <MagCapitalLayout />
+  if (magLayout === 'couture') return <MagCoutureLayout />
+  if (magLayout === 'circuit') return <MagCircuitLayout />
   return <MagStandardLayout />
 }

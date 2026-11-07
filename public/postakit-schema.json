@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "postakit-import",
+  "title": "Postakit AI Import Schema",
+  "description": "Fill this out from photo analysis to auto-populate a Postakit poster. All fields are optional — omit anything the photo doesn't suggest.",
+
+  "layout": {
+    "_comment": "Portrait (700×980) suits single subjects, vertical shots. Landscape (1060×700) suits wide scenes, cars, architecture.",
+    "orientation": "portrait"
+  },
+
+  "photo": {
+    "_comment": "Leave photoPosition and photoScale at defaults unless the subject needs reframing.",
+    "photoPosition": "center 30%",
+    "photoScale": 100,
+    "photoHeightPercent": 72
+  },
+
+  "palette": {
+    "_comment": "Extract 5 dominant colors from the photo. Order: background → midtone → pop color → highlight → near-white/near-black. Use hex strings.",
+    "paletteDots": ["#hex1", "#hex2", "#hex3", "#hex4", "#hex5"],
+    "accentColor": "#hex",
+    "_accentColor_hint": "Pick the most vivid or emotionally resonant color from the palette. Used for the name stamp, event label, and detail labels.",
+    "bgColor": "#0d0d0d",
+    "_bgColor_hint": "Match the darkest tone in the photo, or keep #0d0d0d for universal dark editorial look."
+  },
+
+  "typography": {
+    "_comment": "Choose fonts that match the mood. See available options below.",
+    "displayFont": "Bebas Neue",
+    "bodyFont": "DM Sans",
+    "_displayFont_options": ["Bebas Neue", "Anton", "Black Han Sans", "Staatliches", "Big Shoulders Display"],
+    "_bodyFont_options": ["DM Sans", "Inter", "Outfit", "Space Grotesk", "Syne", "Epilogue"]
+  },
+
+  "topBar": {
+    "_comment": "The thin header line. eventLabel is the context — event name, series, location. Keep it under 60 chars.",
+    "eventLabel": "Event Name · Location",
+    "aliasPill": "",
+    "_aliasPill_hint": "Short tag or handle (e.g. '@username', 'Vol.1'). Leave blank if not applicable.",
+    "showAliasPill": false
+  },
+
+  "subject": {
+    "_comment": "The main subject headline. For a car: model name. For a person: name or alias. For a place: location name.",
+    "subjectTitle": "Subject Name",
+    "subjectTitleAccentWord": "",
+    "_subjectTitleAccentWord_hint": "One word from subjectTitle to highlight in accent color. E.g. if title is 'BMW E30 316i', accentWord could be '316i'. Leave blank if no word stands out.",
+    "captionText": "A short atmospheric description of the photo. 1–2 sentences. Can be poetic or factual. Supports newlines with \\n."
+  },
+
+  "details": {
+    "_comment": "2-column label/value grid. 2–4 rows ideal. Use factual metadata from the photo context.",
+    "showDetailGrid": true,
+    "detailRows": [
+      { "id": "1", "label": "Subject", "value": "Describe the main subject" },
+      { "id": "2", "label": "Location", "value": "Where was this taken" },
+      { "id": "3", "label": "Date", "value": "When was this taken" },
+      { "id": "4", "label": "Context", "value": "Any additional context" }
+    ]
+  },
+
+  "footer": {
+    "_comment": "nameStamp is the large display-font text at the bottom — typically the photographer, brand, or subject identifier.",
+    "nameStamp": "PHOTOGRAPHER",
+    "tagline": "a short memorable phrase · lowercase · separated by dots",
+    "_tagline_hint": "Distill the photo's mood into 5–10 words. Lowercase, separated by · or —.",
+    "tracklist": "tag one · tag two · tag three\nmood tag · visual tag · context tag",
+    "_tracklist_hint": "Fine-print tags like a music tracklist. 1–2 lines of dot-separated descriptors extracted from the photo's visual language — colors, textures, mood, objects.",
+    "photoCredit": "Photograph by [name]",
+    "photoLocation": "City, Country (Year)",
+    "showPhotoCredit": true
+  },
+
+  "overlays": {
+    "_comment": "Inferred from the photo's lighting and mood.",
+    "vignetteIntensity": 0.80,
+    "_vignetteIntensity_hint": "0 = no vignette, 1 = heavy. High-contrast dramatic photos: 0.85–0.95. Clean bright shots: 0.3–0.5.",
+    "vignetteDirection": "bottom",
+    "_vignetteDirection_options": ["bottom", "top", "edges", "left", "right"],
+    "grainOpacity": 0.06,
+    "_grainOpacity_hint": "0 = none. Film/analog aesthetic: 0.08–0.15. Clean digital: 0.02–0.05.",
+    "tintColor": "#000000",
+    "tintOpacity": 0.0,
+    "_tint_hint": "If the photo has strong golden hour or colored lighting, set tintColor to match and tintOpacity 0.10–0.25. For neutral photos keep tintOpacity at 0."
+  },
+
+  "divider": {
+    "showDivider": true,
+    "dividerOpacity": 0.25
+  }
+}

@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'test-results', 'playwright-report']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -23,7 +23,14 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // Core no-unused-vars can't see JSX usage: allow Components and `motion`.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^([A-Z_]|motion$)', argsIgnorePattern: '^[A-Z_]' }],
     },
+  },
+  {
+    // Node-side files: tests and tool configs
+    files: ['e2e/**/*.js', '*.config.js'],
+    languageOptions: { globals: { ...globals.node } },
+    rules: { 'react-hooks/rules-of-hooks': 'off' },
   },
 ])

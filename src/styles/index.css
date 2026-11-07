@@ -1,73 +1,187 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
+@layer base {
+  :root {
+    color-scheme: dark;
+    --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29'/%3E%3C/svg%3E");
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body, #root { height: 100%; }
+
+  body {
+    margin: 0;
+    @apply bg-ink-900 text-ink-100 font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection { background: rgba(255, 77, 46, 0.35); color: #fff; }
+
+  :focus-visible {
+    outline: 2px solid theme('colors.stamp.DEFAULT');
+    outline-offset: 2px;
+  }
+
+  /* Slim, dark scrollbars */
+  * { scrollbar-width: thin; scrollbar-color: theme('colors.ink.600') transparent; }
+  *::-webkit-scrollbar { width: 8px; height: 8px; }
+  *::-webkit-scrollbar-thumb { background: theme('colors.ink.700'); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+  *::-webkit-scrollbar-thumb:hover { background-color: theme('colors.ink.600'); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
-body {
-  margin: 0;
-  background: #111;
-  color: #fff;
-  font-family: 'DM Sans', sans-serif;
+@layer components {
+  /* Film-grain overlay for app surfaces */
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background-image: var(--grain);
+    opacity: 0.05;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  .text-balance { text-wrap: balance; }
+
+  .field-input {
+    @apply w-full rounded-lg border border-ink-700 bg-ink-850 px-3 py-2 text-[13px] text-ink-100 placeholder-ink-500
+      transition-colors hover:border-ink-600 focus:border-stamp/70 focus:outline-none focus:ring-2 focus:ring-stamp/20;
+  }
+
+  .label-xs {
+    @apply font-mono text-[10px] uppercase tracking-[0.14em] text-ink-400;
+  }
+
+  /* Range input */
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 18px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .range::-webkit-slider-runnable-track {
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(to right, theme('colors.stamp.DEFAULT') var(--fill, 0%), theme('colors.ink.700') var(--fill, 0%));
+  }
+  .range::-moz-range-track { height: 3px; border-radius: 3px; background: theme('colors.ink.700'); }
+  .range::-moz-range-progress { height: 3px; border-radius: 3px; background: theme('colors.stamp.DEFAULT'); }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px; margin-top: -5.5px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 77, 46, 0.25), 0 2px 6px rgba(0, 0, 0, 0.5);
+    transition: transform 0.15s;
+  }
+  .range:active::-webkit-slider-thumb { transform: scale(1.2); }
+  .range::-moz-range-thumb {
+    width: 14px; height: 14px; border: 0; border-radius: 999px; background: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 77, 46, 0.25);
+  }
+
+  /* Perforated stamp edge */
+  .perforated {
+    --hole: 5px;
+    --gap: 14px;
+    -webkit-mask:
+      radial-gradient(circle var(--hole) at center, #0000 98%, #000) 50% 50% / var(--gap) var(--gap) round;
+    mask:
+      radial-gradient(circle var(--hole) at center, #0000 98%, #000) 50% 50% / var(--gap) var(--gap) round;
+  }
 }
 
-/* Editable elements — crosshair cursor signals interactivity */
-.poster-editable {
-  cursor: crosshair;
-}
+/* ───────────── Poster canvas interaction (editor only) ───────────── */
 
-/* Subtle hover outline — indicates the element is clickable */
+.poster-editable { cursor: pointer; border-radius: 2px; transition: outline-color 0.15s, background-color 0.15s; }
+
 .poster-editable:not(.poster-editing):hover {
-  outline: 1px dashed rgba(255, 255, 255, 0.22);
+  outline: 1px dashed rgba(255, 255, 255, 0.35) !important;
   outline-offset: 3px;
-  border-radius: 2px;
 }
 
-/* Edit mode — normal text cursor */
+.poster-selected {
+  outline: 1.5px solid #ff4d2e !important;
+  outline-offset: 3px;
+  background-color: rgba(255, 77, 46, 0.08);
+}
+
 .poster-editing {
   cursor: text !important;
-  outline: 1px solid rgba(255, 255, 255, 0.45) !important;
+  outline: 1.5px solid #ff4d2e !important;
   outline-offset: 3px;
-  border-radius: 2px;
+  background-color: rgba(0, 0, 0, 0.25);
+  caret-color: #ff4d2e;
 }
 
-/* Action bar — appears above the selected element */
+.poster-divider { cursor: pointer; }
+.poster-divider:hover { outline: 1px dashed rgba(255, 255, 255, 0.3); outline-offset: 1px; }
+
+.poster-annotation:active { cursor: grabbing; }
+
+/* Action bar — sits just above the selected element */
 .poster-action-bar {
   position: absolute;
-  top: calc(-100% - 6px);
-  right: 0;
+  bottom: calc(100% + 8px);
+  right: -4px;
   display: flex;
-  gap: 2px;
+  gap: 1px;
   z-index: 100;
-  pointer-events: all;
+  padding: 2px;
+  border-radius: 7px;
+  background: rgba(13, 13, 16, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  animation: action-in 0.16s ease-out;
+  /* Counter the canvas zoom so the toolbar stays a readable size. */
+  scale: calc(1 / var(--canvas-scale, 1));
+  transform-origin: bottom right;
+  font-family: 'Inter', sans-serif !important;
+  font-style: normal !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  line-height: 1 !important;
+  text-align: left;
+  white-space: nowrap;
+}
+
+@keyframes action-in {
+  from { opacity: 0; translate: 0 4px; }
+  to { opacity: 1; translate: 0 0; }
 }
 
 .poster-action-btn {
-  height: 20px;
-  padding: 0 7px;
-  border-radius: 4px;
-  background: rgba(15, 15, 15, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 5px;
+  background: transparent;
+  border: 0;
   color: rgba(255, 255, 255, 0.85);
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 500;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  white-space: nowrap;
-  transition: background 0.1s;
+  transition: background 0.12s, color 0.12s;
 }
 
-.poster-action-btn:hover {
-  background: rgba(40, 40, 40, 0.95);
-}
-
-.poster-action-remove:hover {
-  background: rgba(180, 30, 30, 0.9);
-  border-color: rgba(255, 80, 80, 0.4);
-}
+.poster-action-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.poster-action-remove:hover { background: rgba(255, 77, 46, 0.9); }

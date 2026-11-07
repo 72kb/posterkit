@@ -1,8 +1,10 @@
 import { forwardRef } from 'react'
-import usePosterStore from '../../store/posterStore'
+import { usePoster } from '../../store/usePoster'
 import { hexToRgba } from '../../lib/colorUtils'
+import { posterSize } from '../../lib/dimensions'
 import TopBar from './TopBar'
 import PhotoArea from './PhotoArea'
+import PhotoBackdrop from './PhotoBackdrop'
 import MidCaption from './MidCaption'
 import DetailGrid from './DetailGrid'
 import BottomFooter from './BottomFooter'
@@ -10,23 +12,24 @@ import EditableText from './EditableText'
 import AnnotatedCanvas from './AnnotatedCanvas'
 import MagazineCanvas from './MagazineCanvas'
 
-const PORTRAIT_W = 700
-const PORTRAIT_H = 980
-const LANDSCAPE_W = 1060
-const LANDSCAPE_H = 700
-
+/**
+ * The poster itself — a fixed-pixel element (export depends on exact size).
+ * Scale it with a CSS transform on a wrapper, never by resizing this node.
+ */
 const PosterCanvas = forwardRef(function PosterCanvas(_, ref) {
-  const { orientation, bgColor, posterStyle } = usePosterStore()
+  const posterStyle = usePoster((s) => s.posterStyle)
+  const orientation = usePoster((s) => s.orientation)
+  const bgColor = usePoster((s) => s.bgColor)
+  const { width, height } = posterSize({ posterStyle, orientation })
   const isPortrait = orientation === 'portrait'
-  const W = isPortrait ? PORTRAIT_W : LANDSCAPE_W
-  const H = isPortrait ? PORTRAIT_H : LANDSCAPE_H
 
   return (
     <div
       ref={ref}
+      className="poster-root"
       style={{
-        width: W,
-        height: H,
+        width,
+        height,
         backgroundColor: bgColor || '#0d0d0d',
         position: 'relative',
         overflow: 'hidden',
@@ -38,22 +41,21 @@ const PosterCanvas = forwardRef(function PosterCanvas(_, ref) {
       {posterStyle === 'annotated'
         ? <AnnotatedCanvas />
         : posterStyle === 'magazine'
-        ? <MagazineCanvas />
-        : isPortrait ? <PortraitLayout /> : <LandscapeLayout />
-      }
+          ? <MagazineCanvas />
+          : isPortrait ? <PortraitLayout /> : <LandscapeLayout />}
     </div>
   )
 })
 
 function PortraitLayout() {
-  const { photoHeightPercent, portraitStyle } = usePosterStore()
+  const { photoHeightPercent, portraitStyle } = usePoster()
   if (portraitStyle === 'transparent') return <TransparentPortraitLayout />
   if (portraitStyle === 'compact')     return <CompactStoryLayout />
   return (
     <>
       <TopBar />
       <PhotoArea height={`${photoHeightPercent}%`} />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
+      <div style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column' }}>
         <MidCaption />
         <DetailGrid />
         <BottomFooter />
@@ -63,51 +65,9 @@ function PortraitLayout() {
 }
 
 function TransparentPortraitLayout() {
-  const {
-    photoUrl, photoPosition, photoScale,
-    tintColor, tintOpacity, vignetteIntensity, vignetteDirection, grainOpacity,
-  } = usePosterStore()
-
-  const GRAIN_SVG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
-
-  const vignetteGradient = {
-    bottom: `linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 55%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
-    top: `linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 55%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
-    edges: `radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
-    left: `linear-gradient(to right, rgba(0,0,0,${vignetteIntensity}) 0%, rgba(0,0,0,0) 50%)`,
-    right: `linear-gradient(to left, rgba(0,0,0,${vignetteIntensity}) 0%, rgba(0,0,0,0) 50%)`,
-  }[vignetteDirection] || ''
-
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {/* Photo */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: photoUrl ? `url(${photoUrl})` : 'none',
-        backgroundColor: photoUrl ? 'transparent' : '#1a1a1a',
-        backgroundSize: `${photoScale}%`,
-        backgroundPosition: photoPosition,
-        backgroundRepeat: 'no-repeat',
-      }} />
-      {!photoUrl && (
-        <div style={{
-          position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'rgba(255,255,255,0.15)', fontSize: 13, letterSpacing: '0.1em',
-          textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif',
-        }}>Upload a photo</div>
-      )}
-      {/* Tint */}
-      <div style={{ position: 'absolute', inset: 0, backgroundColor: tintColor, opacity: tintOpacity, mixBlendMode: 'multiply' }} />
-      {/* Vignette */}
-      <div style={{ position: 'absolute', inset: 0, background: vignetteGradient, pointerEvents: 'none' }} />
-      {/* Grain */}
-      {grainOpacity > 0 && (
-        <div style={{
-          position: 'absolute', inset: 0, opacity: grainOpacity,
-          backgroundImage: GRAIN_SVG, backgroundRepeat: 'repeat',
-          backgroundSize: '128px', mixBlendMode: 'overlay', pointerEvents: 'none',
-        }} />
-      )}
+      <PhotoBackdrop />
       {/* Content */}
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <TopBar />
@@ -141,57 +101,19 @@ const COMPACT_ALIGN = {
 
 function CompactStoryLayout() {
   const {
-    photoUrl, photoPosition, photoScale, bgColor,
-    tintColor, tintOpacity, vignetteIntensity, vignetteDirection, grainOpacity,
+    bgColor,
     subjectTitle, showSubjectTitle, captionText, showCaption, photoCredit, photoLocation, showPhotoCredit, showPhotoLocation,
-    displayFont, bodyFont, accentColor, textColor,
+    displayFont, bodyFont, textColor,
     compactPosition,
     set,
-  } = usePosterStore()
-
-  const GRAIN_SVG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
-
-  const vignetteGradient = {
-    bottom: `linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 55%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
-    top: `linear-gradient(to top, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 55%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
-    edges: `radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
-    left: `linear-gradient(to right, rgba(0,0,0,${vignetteIntensity}) 0%, rgba(0,0,0,0) 50%)`,
-    right: `linear-gradient(to left, rgba(0,0,0,${vignetteIntensity}) 0%, rgba(0,0,0,0) 50%)`,
-  }[vignetteDirection] || ''
+  } = usePoster()
 
   const pos = COMPACT_POSITIONS[compactPosition] || COMPACT_POSITIONS['bottom-left']
   const textAlign = COMPACT_ALIGN[compactPosition] || 'left'
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {/* Photo */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: photoUrl ? `url(${photoUrl})` : 'none',
-        backgroundColor: photoUrl ? 'transparent' : (bgColor || '#1a1a1a'),
-        backgroundSize: `${photoScale}%`,
-        backgroundPosition: photoPosition,
-        backgroundRepeat: 'no-repeat',
-      }} />
-      {!photoUrl && (
-        <div style={{
-          position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: hexToRgba(textColor, 0.15), fontSize: 13, letterSpacing: '0.1em',
-          textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif',
-        }}>Upload a photo</div>
-      )}
-      {/* Tint */}
-      <div style={{ position: 'absolute', inset: 0, backgroundColor: tintColor, opacity: tintOpacity, mixBlendMode: 'multiply' }} />
-      {/* Vignette */}
-      <div style={{ position: 'absolute', inset: 0, background: vignetteGradient, pointerEvents: 'none' }} />
-      {/* Grain */}
-      {grainOpacity > 0 && (
-        <div style={{
-          position: 'absolute', inset: 0, opacity: grainOpacity,
-          backgroundImage: GRAIN_SVG, backgroundRepeat: 'repeat',
-          backgroundSize: '128px', mixBlendMode: 'overlay', pointerEvents: 'none',
-        }} />
-      )}
+      <PhotoBackdrop vignette="soft" placeholderBg={bgColor || '#1a1a1a'} />
 
       {/* Floating text block */}
       <div style={{
@@ -281,48 +203,13 @@ function LandscapeLayout() {
     photoCredit, photoLocation, showPhotoCredit, showPhotoLocation,
     displayFont, bodyFont, accentColor, textColor,
     detailRows, showDetailGrid, showDivider, dividerOpacity,
-    captionText, showCaption, photoUrl, photoPosition, photoScale,
-    tintColor, tintOpacity, vignetteIntensity, vignetteDirection, grainOpacity,
+    captionText, showCaption,
     set, updateDetailRow, removeDetailRow,
-  } = usePosterStore()
-
-  const vignetteGradient = {
-    bottom: `linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 55%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
-    top: `linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 55%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
-    edges: `radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,${vignetteIntensity}) 100%)`,
-    left: `linear-gradient(to right, rgba(0,0,0,${vignetteIntensity}) 0%, rgba(0,0,0,0) 50%)`,
-    right: `linear-gradient(to left, rgba(0,0,0,${vignetteIntensity}) 0%, rgba(0,0,0,0) 50%)`,
-  }[vignetteDirection] || ''
+  } = usePoster()
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {/* Photo background layers */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: photoUrl ? `url(${photoUrl})` : 'none',
-        backgroundColor: photoUrl ? 'transparent' : '#1a1a1a',
-        backgroundSize: `${photoScale}%`,
-        backgroundPosition: photoPosition,
-        backgroundRepeat: 'no-repeat',
-      }} />
-      {!photoUrl && (
-        <div style={{
-          position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'rgba(255,255,255,0.15)', fontSize: 13, letterSpacing: '0.1em',
-          textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif',
-        }}>
-          Upload a photo
-        </div>
-      )}
-      <div style={{ position: 'absolute', inset: 0, backgroundColor: tintColor, opacity: tintOpacity, mixBlendMode: 'multiply' }} />
-      <div style={{ position: 'absolute', inset: 0, background: vignetteGradient, pointerEvents: 'none' }} />
-      {grainOpacity > 0 && (
-        <div style={{
-          position: 'absolute', inset: 0, opacity: grainOpacity,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat', backgroundSize: '128px', mixBlendMode: 'overlay', pointerEvents: 'none',
-        }} />
-      )}
+      <PhotoBackdrop />
 
       {/* Content overlay */}
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>

@@ -1,9 +1,9 @@
-import usePosterStore from '../../store/posterStore'
+import { usePoster } from '../../store/usePoster'
 import EditableText from './EditableText'
 import { hexToRgba } from '../../lib/colorUtils'
 
 export default function TopBar() {
-  const { paletteDots, eventLabel, aliasPill, showAliasPill, showEventLabel, accentColor, textColor, bodyFont, set } = usePosterStore()
+  const { paletteDots, eventLabel, aliasPill, showAliasPill, showEventLabel, accentColor, textColor, bodyFont, set } = usePoster()
 
   return (
     <div style={{
